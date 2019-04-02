@@ -1,0 +1,7 @@
+name: xRank
+version: ${project.version}
+main: me.imdanix.rank.RankPlugin
+api-version: 1.13
+load: STARTUP
+authors: [imDaniX]
+description: Simple rank plugin
