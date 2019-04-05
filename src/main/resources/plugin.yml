@@ -5,3 +5,7 @@ api-version: 1.13
 load: STARTUP
 authors: [imDaniX]
 description: Simple rank plugin
+commands:
+  xrank:
+    aliases: [rank,ranks]
+    permission: xrank.command
