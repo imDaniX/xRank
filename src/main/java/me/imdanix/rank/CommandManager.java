@@ -5,7 +5,11 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.bukkit.util.StringUtil;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class CommandManager implements CommandExecutor, TabCompleter {
@@ -49,6 +53,10 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-		return null;
+		List<String> ranks=new ArrayList<>(RankPlugin.ranks.keySet());
+		List<String> completions = new ArrayList<>(ranks);
+		StringUtil.copyPartialMatches(args[0], ranks, completions);
+		Collections.sort(completions);
+		return completions;
 	}
 }
