@@ -27,9 +27,10 @@ public final class RankPlugin extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		instance=this;
+		instance.saveDefaultConfig();
 		CommandManager cm=new CommandManager();
 		getCommand("xrank").setExecutor(cm);
-		timer=getConfig().getInt("timer")*20;
+		timer=instance.getConfig().getInt("timer")*20;
 		loadRanks();
 		startScheduler();
 	}
