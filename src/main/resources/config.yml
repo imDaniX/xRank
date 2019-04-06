@@ -1,0 +1,28 @@
+settings:
+  # В минутах
+  timer: 5
+  # Сообщение для рангов без автополучения
+  getting_message: "&9&oСистема &f&oрангов&8> &fВам доступен ранг &a%rank&f! Введите &a/rank %rank&f для получения."
+  # Сообщение при получении ранга
+  broadcast_message: "&9&oСистема &f&oрангов&8> &a%player&f только что получил ранг &a%rank&f!"
+  # Сообщение при недостатке наигранного времени для получения ранга
+  no_time: "&9&oСистема &f&oрангов&8> &cДля получения ранга &e%rank&c вам требуется наиграть ещё &e%time минут&c!"
+  # Сообщение, если введеный в команде ранг не существует
+  no_rank: "&9&oСистема &f&oрангов&8> &cРанга &e%rank&c не существует на этом сервере!"
+ranks:
+  newbie:
+    minutes: 1480
+    name: Newbie
+    description: "&aTest"
+    auto: true
+    broadcast: false
+    commands:
+      - lp user %player parent set newbie
+    usual:
+      minutes: 2960
+      name: Usual
+      description: "&6Test"
+      auto: false
+      broadcast: true
+      commands:
+        - lp user %player parent set usual
