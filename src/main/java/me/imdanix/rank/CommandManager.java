@@ -38,8 +38,9 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 			RankPlugin.loadData();
 			RankPlugin.loadRanks();
 			RankPlugin.startScheduler();
+			return true;
 		}
-		Rank rank=RankPlugin.ranks.get(args[1]);
+		Rank rank=RankPlugin.ranks.get(args[0]);
 		if(rank!=null) {
 			if(rank.rankUp((Player)sender))
 				rank.execute((Player)sender);

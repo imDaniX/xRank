@@ -20,6 +20,7 @@ public final class RankPlugin extends JavaPlugin {
 	public static Map<String, Rank> ranks;
 	public static int timer;
 	private static BukkitTask scheduler;
+	private static boolean backwardLook;
 
 	public static String gettingMessage, broadcastMessage, noRank, noTime;
 	public static List<String> helpMessages, infoMessages;
@@ -28,15 +29,15 @@ public final class RankPlugin extends JavaPlugin {
 	public void onEnable() {
 		instance=this;
 		instance.saveDefaultConfig();
-		CommandManager cm=new CommandManager();
-		getCommand("xrank").setExecutor(cm);
-		timer=instance.getConfig().getInt("timer")*20;
+		getCommand("xrank").setExecutor(new CommandManager());
+		loadData();
 		loadRanks();
 		startScheduler();
 	}
 
 	public static void loadData() {
 		FileConfiguration cfg=instance.getConfig();
+		backwardLook=cfg.getBoolean("settings.backward_look");
 		timer=cfg.getInt("settings.timer")*1200;
 		gettingMessage=clr(cfg.getString("settings.getting_message").replace("\\n", "\n"));
 		broadcastMessage=clr(cfg.getString("settings.broadcast_message").replace("\\n", "\n"));
@@ -63,6 +64,10 @@ public final class RankPlugin extends JavaPlugin {
 							break;
 			}
 		}.runTaskTimerAsynchronously(instance, timer, timer);
+	}
+
+	public static boolean getMode() {
+		return backwardLook;
 	}
 
 	public static void stopScheduler() {

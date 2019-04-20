@@ -8,6 +8,8 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
+import static me.imdanix.rank.RankPlugin.clr;
+
 public class Rank {
 	private int minutes;
 	private String name;
@@ -17,11 +19,11 @@ public class Rank {
 	private boolean auto;
 	private boolean broadcast;
 
-	public Rank(String name, ConfigurationSection section) {
+	public Rank(String id, ConfigurationSection section) {
 		this(section.getInt("minutes"),
-				RankPlugin.clr(section.getString("name")),
+				section.getString("name"),
 				section.getString("description"),
-				"xrank.rank."+name,
+				"xrank.rank."+id,
 				section.getStringList("commands"),
 				section.getBoolean("auto"),
 				section.getBoolean("broadcast"));
@@ -29,8 +31,8 @@ public class Rank {
 
 	public Rank(int minutes, String name, String description, String permission, List<String> commands, boolean auto, boolean broadcast) {
 		this.minutes=minutes;
-		this.name=name;
-		this.description=description;
+		this.name=clr(name);
+		this.description=clr(description);
 		this.commands=commands;
 		this.permission=permission;
 		this.auto=auto;
@@ -38,13 +40,13 @@ public class Rank {
 	}
 
 	public boolean rankUp(Player p) {
-		if(!(checkTime(p)&&p.hasPermission(permission)))
+		if(!haveAccess(p))
 			return false;
 		p.sendMessage(description);
 		if(auto)
 			execute(p);
 		else
-			p.sendMessage(RankPlugin.gettingMessage.replace("%rank", name));
+			p.sendMessage(RankPlugin.gettingMessage.replace("%rank", name).replace("%player", p.getName()));
 		return true;
 	}
 
@@ -52,8 +54,15 @@ public class Rank {
 		if(broadcast)
 			Bukkit.broadcastMessage(RankPlugin.broadcastMessage.replace("%player", p.getName()).replace("%rank", name));
 		ConsoleCommandSender console=Bukkit.getConsoleSender();
-		commands.forEach(cmd->Bukkit.dispatchCommand(console, cmd.replace("%player", p.getName())));
+		Bukkit.getScheduler().runTask(RankPlugin.getInstance(),
+				() -> commands.forEach(cmd->Bukkit.dispatchCommand(console, cmd.replace("%player", p.getName()))));
 		return true;
+	}
+
+	public boolean haveAccess(Player p) {
+		if(!checkTime(p))
+			return false;
+		return RankPlugin.getMode()==p.hasPermission(permission);
 	}
 
 	public boolean checkTime(Player p) {

@@ -1,6 +1,8 @@
 settings:
   # В минутах
   timer: 5
+  # Если у игрока ЕСТЬ право - повышаться можно.
+  backward_look: false
   # Сообщение для рангов без автополучения
   getting_message: "&9&oСистема &f&oрангов&8> &fВам доступен ранг &a%rank&f! Введите &a/rank %rank&f для получения."
   # Сообщение при получении ранга
@@ -9,6 +11,13 @@ settings:
   no_time: "&9&oСистема &f&oрангов&8> &cДля получения ранга &e%rank&c вам требуется наиграть ещё &e%time минут&c!"
   # Сообщение, если введеный в команде ранг не существует
   no_rank: "&9&oСистема &f&oрангов&8> &cРанга &e%rank&c не существует на этом сервере!"
+  # Список команд
+  help_messages:
+    - '&a/rank info &7- информация о рангах'
+    - '&a/rank info ранг &7- информация о конкретном ранге'
+    - '&a/rank ранг &7- повышение ранга'
+  info_messages:
+    - '&eЭто ранги, детка!'
 ranks:
   newbie:
     minutes: 1480
@@ -17,7 +26,8 @@ ranks:
     auto: true
     broadcast: false
     commands:
-      - lp user %player parent set newbie
+      - lp user %player promote player
+      - eco give %player 50
     usual:
       minutes: 2960
       name: Usual
@@ -26,3 +36,4 @@ ranks:
       broadcast: true
       commands:
         - lp user %player parent set usual
+        - eco give %player 1000
