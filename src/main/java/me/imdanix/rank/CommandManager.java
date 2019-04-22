@@ -14,10 +14,12 @@ import java.util.List;
 public class CommandManager implements CommandExecutor, TabCompleter {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if(args.length==0) {
+		// Command list
+		if(args.length==0||args[0].equalsIgnoreCase("help")) {
 			RankPlugin.helpMessages.forEach(sender::sendMessage);
 			return true;
 		}
+		// Ranks info
 		if(args[0].equalsIgnoreCase("info")) {
 			if(args.length==1)
 				RankPlugin.infoMessages.forEach(sender::sendMessage);
@@ -30,6 +32,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 			}
 			return true;
 		}
+		// Reload plugin
 		if(args[0].equalsIgnoreCase("reload")) {
 			if(!sender.hasPermission("xrank.reload"))
 				return false;
@@ -40,6 +43,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 			RankPlugin.startScheduler();
 			return true;
 		}
+		// Ranking
 		Rank rank=RankPlugin.ranks.get(args[0]);
 		if(rank!=null) {
 			if(rank.rankUp((Player)sender))
