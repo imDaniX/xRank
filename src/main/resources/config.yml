@@ -47,5 +47,5 @@ ranks:
     auto: false
     broadcast: true
     commands:
-      - lp user %player parent set usual
+      - lp user %player promote player
       - eco give %player 1000
