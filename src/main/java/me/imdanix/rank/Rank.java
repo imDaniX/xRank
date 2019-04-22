@@ -16,6 +16,7 @@ public class Rank {
 	private String permission;
 	private List<String> description;
 	private List<String> commands;
+	private boolean fromJoin;
 	private boolean auto;
 	private boolean broadcast;
 
@@ -25,16 +26,18 @@ public class Rank {
 				section.getStringList("description"),
 				"xrank.rank."+id,
 				section.getStringList("commands"),
+				section.getBoolean("from_join"),
 				section.getBoolean("auto"),
 				section.getBoolean("broadcast"));
 	}
 
-	public Rank(int minutes, String name, List<String> description, String permission, List<String> commands, boolean auto, boolean broadcast) {
+	public Rank(int minutes, String name, List<String> description, String permission, List<String> commands, boolean fromJoin, boolean auto, boolean broadcast) {
 		this.minutes=minutes;
 		this.name=clr(name);
 		this.description=clr(description);
 		this.commands=commands;
 		this.permission=permission;
+		this.fromJoin=fromJoin;
 		this.auto=auto;
 		this.broadcast=broadcast;
 	}
@@ -65,7 +68,10 @@ public class Rank {
 	}
 
 	public boolean checkTime(Player p) {
-		return minutes<=p.getStatistic(Statistic.PLAY_ONE_MINUTE);
+		double time=p.getStatistic(Statistic.PLAY_ONE_MINUTE);
+		if(fromJoin)
+			time=p.getFirstPlayed()/60000;
+		return minutes<=time;
 	}
 
 	public int getTime(Player p) {

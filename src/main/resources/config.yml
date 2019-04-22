@@ -28,6 +28,7 @@ ranks:
   # Право xrank.rank.newbie
   newbie:
     minutes: 1480
+    from_join: true
     name: Newbie
     description:
       - '&aВы больше не гость!'
@@ -39,6 +40,7 @@ ranks:
   # Право xrank.rank.usual
   usual:
     minutes: 2960
+    from_join: false
     name: Usual
     description:
       - '&6Вы больше не будете новичком!'
