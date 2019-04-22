@@ -36,7 +36,7 @@ ranks:
     commands:
       - lp user %player promote player
       - eco give %player 50
-  # Право xrank.rank.newbie
+  # Право xrank.rank.usual
   usual:
     minutes: 2960
     name: Usual
