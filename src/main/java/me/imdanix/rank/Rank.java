@@ -47,7 +47,7 @@ public class Rank {
 			return false;
 		description.forEach(p::sendMessage);
 		if(auto)
-			execute(p);
+			return execute(p);
 		return true;
 	}
 
