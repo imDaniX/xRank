@@ -35,6 +35,11 @@ public final class RankPlugin extends JavaPlugin {
 		startScheduler();
 	}
 
+	@Override
+	public void onDisable() {
+		stopScheduler();
+	}
+
 	public static void loadData() {
 		FileConfiguration cfg=instance.getConfig();
 		backwardLook=cfg.getBoolean("settings.backward_look");

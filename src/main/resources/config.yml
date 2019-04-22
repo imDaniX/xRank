@@ -1,10 +1,11 @@
 settings:
   # В минутах
   timer: 5
-  # Если у игрока ЕСТЬ право - повышаться можно.
+  # true Если у игрока ЕСТЬ право - повышаться можно.
+  # false Если у игрока НЕТ права - повышаться можно.
   backward_look: false
-  # Сообщение для рангов без автополучения
-  getting_message: "&9&oСистема &f&oрангов&8> &fВам доступен ранг &a%rank&f! Введите &a/rank %rank&f для получения."
+  # Сообщение при получение ранга
+  getting_message: "&9&oСистема &f&oрангов&8> &fВы повысили свой ранг до &a%rank&f!"
   # Сообщение при получении ранга
   broadcast_message: "&9&oСистема &f&oрангов&8> &a%player&f только что получил ранг &a%rank&f!"
   # Сообщение при недостатке наигранного времени для получения ранга
@@ -13,27 +14,36 @@ settings:
   no_rank: "&9&oСистема &f&oрангов&8> &cРанга &e%rank&c не существует на этом сервере!"
   # Список команд
   help_messages:
-    - '&a/rank info &7- информация о рангах'
+    - '&a/rank info &7- краткая информация о рангах'
     - '&a/rank info ранг &7- информация о конкретном ранге'
     - '&a/rank ранг &7- повышение ранга'
   info_messages:
-    - '&eЭто ранги, детка!'
+    - '&e&m                                                                     &9'
+    - '&eРанги&f позволяют получить улучшения &aприватов&f, &aточек дома&f.'
+    - 'Также &eранги&f дают некоторые небольшие возможности, вроде использования &a/hat&f.'
+    - 'Получение &eрангов&f производится путем &eобычной игры&f на сервере.'
+    - 'Вам &aне требуется&f платить за это - просто &aоставайтесь с нами&f! ;)'
+    - '&e&m                                                                     &9'
 ranks:
+  # Право xrank.rank.newbie
   newbie:
     minutes: 1480
     name: Newbie
-    description: "&aTest"
+    description:
+      - '&aВы больше не гость!'
     auto: true
     broadcast: false
     commands:
       - lp user %player promote player
       - eco give %player 50
-    usual:
-      minutes: 2960
-      name: Usual
-      description: "&6Test"
-      auto: false
-      broadcast: true
-      commands:
-        - lp user %player parent set usual
-        - eco give %player 1000
+  # Право xrank.rank.newbie
+  usual:
+    minutes: 2960
+    name: Usual
+    description:
+      - '&6Вы больше не будете новичком!'
+    auto: false
+    broadcast: true
+    commands:
+      - lp user %player parent set usual
+      - eco give %player 1000

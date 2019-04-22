@@ -24,7 +24,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 			else {
 				Rank rank=RankPlugin.ranks.get(args[1]);
 				if(rank!=null)
-					sender.sendMessage(rank.getDescription());
+					rank.getDescription().forEach(sender::sendMessage);
 				else
 					sender.sendMessage(RankPlugin.noRank.replace("%rank", args[1]));
 			}
@@ -47,15 +47,17 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 			else
 				sender.sendMessage(RankPlugin.noTime.replace("%rank", rank.getName()).replace("%time", ""+rank.getTime((Player)sender)));
 		} else
-			sender.sendMessage(RankPlugin.noRank.replace("%rank", args[1]));
+			sender.sendMessage(RankPlugin.noRank.replace("%rank", args[0]));
 		return true;
 	}
 
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-		List<String> ranks=new ArrayList<>(RankPlugin.ranks.keySet());
-		List<String> completions = new ArrayList<>(ranks);
-		StringUtil.copyPartialMatches(args[0], ranks, completions);
+		List<String> variants=new ArrayList<>(RankPlugin.ranks.keySet());
+		if(args.length==1)
+			variants.add("info");
+		List<String> completions = new ArrayList<>(variants);
+		StringUtil.copyPartialMatches(args[0], variants, completions);
 		Collections.sort(completions);
 		return completions;
 	}
