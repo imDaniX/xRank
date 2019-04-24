@@ -43,7 +43,7 @@ ranks:
     from_join: false
     name: Usual
     description:
-      - '&6Вы больше не будете новичком!'
+      - '&6Вы больше не будете новичком! Просто введите /rank usual'
     auto: false
     broadcast: true
     commands:
