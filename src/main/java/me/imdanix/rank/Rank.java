@@ -11,14 +11,14 @@ import java.util.List;
 import static me.imdanix.rank.RankPlugin.clr;
 
 public class Rank {
-	private int minutes;
-	private String name;
-	private String permission;
-	private List<String> description;
-	private List<String> commands;
-	private boolean fromJoin;
-	private boolean auto;
-	private boolean broadcast;
+	private final int minutes;
+	private final String name;
+	private final String permission;
+	private final List<String> description;
+	private final List<String> commands;
+	private final boolean fromJoin;
+	private final boolean auto;
+	private final boolean broadcast;
 
 	public Rank(String id, ConfigurationSection section) {
 		this(section.getInt("minutes"),
