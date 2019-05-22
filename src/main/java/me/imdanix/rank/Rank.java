@@ -61,15 +61,18 @@ public class Rank {
 		if(!haveAccess(p))
 			return false;
 		description.forEach(s->p.sendMessage(s.replace("%player", p.getName())));
-		if(auto) {
-			if(broadcast)
-				Bukkit.broadcastMessage(RankPlugin.broadcastMessage.replace("%player", p.getName()).replace("%rank", name));
-			p.sendMessage(RankPlugin.gettingMessage.replace("%rank", name).replace("%player", p.getName()));
-			ConsoleCommandSender console=Bukkit.getConsoleSender();
-			Bukkit.getScheduler().runTask(RankPlugin.getInstance(),
-					() -> commands.forEach(cmd->Bukkit.dispatchCommand(console, cmd.replace("%player", p.getName()))));
-		}
+		if(auto)
+			execute(p);
 		return true;
+	}
+
+	public void execute(Player p) {
+		if(broadcast)
+			Bukkit.broadcastMessage(RankPlugin.broadcastMessage.replace("%player", p.getName()).replace("%rank", name));
+		p.sendMessage(RankPlugin.gettingMessage.replace("%rank", name).replace("%player", p.getName()));
+		ConsoleCommandSender console=Bukkit.getConsoleSender();
+		Bukkit.getScheduler().runTask(RankPlugin.getInstance(),
+				() -> commands.forEach(cmd->Bukkit.dispatchCommand(console, cmd.replace("%player", p.getName()))));
 	}
 
 	/**
