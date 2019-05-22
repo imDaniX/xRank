@@ -32,7 +32,7 @@ public class Rank {
 	}
 
 	/**
-	 * @param minutes How many time player should have to rankup
+	 * @param minutes How many minutes player should have to rankup
 	 * @param name Name of this rank. Colors can be used
 	 * @param description Description of this rank. Colors can be used
 	 * @param permission Permission of this rank
