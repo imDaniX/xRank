@@ -11,7 +11,7 @@ import java.util.List;
 import static me.imdanix.rank.RankPlugin.clr;
 
 public class Rank {
-	private final int minutes;
+	private final long time;
 	private final String name;
 	private final String permission;
 	private final List<String> description;
@@ -31,8 +31,18 @@ public class Rank {
 				section.getBoolean("broadcast"));
 	}
 
+	/**
+	 * @param minutes How many time player should have to rankup
+	 * @param name Name of this rank. Colors can be used
+	 * @param description Description of this rank. Colors can be used
+	 * @param permission Permission of this rank
+	 * @param commands List of commands that will be executed on rankup
+	 * @param fromJoin Are time from first join or player's statistic
+	 * @param auto Will player gain this rank automatically
+	 * @param broadcast Do you want to broadcast about rankup
+	 */
 	public Rank(int minutes, String name, List<String> description, String permission, List<String> commands, boolean fromJoin, boolean auto, boolean broadcast) {
-		this.minutes=minutes;
+		this.time=minutes*1200;
 		this.name=clr(name);
 		this.description=clr(description);
 		this.commands=commands;
@@ -42,40 +52,51 @@ public class Rank {
 		this.broadcast=broadcast;
 	}
 
+	/**
+	 * Trying to rankup if possible or showing that it's possible
+	 * @param p Player to rankup
+	 * @return true if player have access
+	 */
 	public boolean rankUp(Player p) {
 		if(!haveAccess(p))
 			return false;
-		description.forEach(p::sendMessage);
-		if(auto)
-			return execute(p);
+		description.forEach(s->p.sendMessage(s.replace("%player", p.getName())));
+		if(auto) {
+			if(broadcast)
+				Bukkit.broadcastMessage(RankPlugin.broadcastMessage.replace("%player", p.getName()).replace("%rank", name));
+			p.sendMessage(RankPlugin.gettingMessage.replace("%rank", name).replace("%player", p.getName()));
+			ConsoleCommandSender console=Bukkit.getConsoleSender();
+			Bukkit.getScheduler().runTask(RankPlugin.getInstance(),
+					() -> commands.forEach(cmd->Bukkit.dispatchCommand(console, cmd.replace("%player", p.getName()))));
+		}
 		return true;
 	}
 
-	public boolean execute(Player p) {
-		if(broadcast)
-			Bukkit.broadcastMessage(RankPlugin.broadcastMessage.replace("%player", p.getName()).replace("%rank", name));
-		p.sendMessage(RankPlugin.gettingMessage.replace("%rank", name).replace("%player", p.getName()));
-		ConsoleCommandSender console=Bukkit.getConsoleSender();
-		Bukkit.getScheduler().runTask(RankPlugin.getInstance(),
-				() -> commands.forEach(cmd->Bukkit.dispatchCommand(console, cmd.replace("%player", p.getName()))));
-		return true;
-	}
-
+	/**
+	 * Checks access to gain this rank
+	 * @param p Player to check
+	 * @return Can player gain that rank
+	 */
 	public boolean haveAccess(Player p) {
-		if(!checkTime(p))
-			return false;
-		return RankPlugin.getMode()==p.hasPermission(permission);
+		return checkTime(p) && RankPlugin.getMode()==p.hasPermission(permission);
 	}
 
+	/**
+	 * Checks player's time compared to rank's request
+	 * @param p Player to check
+	 * @return Does player enough time to gain that rank
+	 */
 	public boolean checkTime(Player p) {
-		double time=p.getStatistic(Statistic.PLAY_ONE_MINUTE);
-		if(fromJoin)
-			time=p.getFirstPlayed()/60000;
-		return minutes<=time;
+		return time <= (fromJoin ? (System.currentTimeMillis()-p.getFirstPlayed())/50 : p.getStatistic(Statistic.PLAY_ONE_MINUTE));
 	}
 
-	public int getTime(Player p) {
-		return minutes-p.getStatistic(Statistic.PLAY_ONE_MINUTE);
+	/**
+	 * Gets player's time to gain that rank
+	 * @param p Player to check
+	 * @return Time to gain this rank
+	 */
+	public long getTime(Player p) {
+		return time - (fromJoin ? (System.currentTimeMillis()-p.getFirstPlayed())/50 : p.getStatistic(Statistic.PLAY_ONE_MINUTE));
 	}
 
 	public List<String> getDescription() {
