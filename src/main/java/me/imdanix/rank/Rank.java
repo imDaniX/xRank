@@ -42,7 +42,7 @@ public class Rank {
 	 * @param broadcast Do you want to broadcast about rankup
 	 */
 	public Rank(int minutes, String name, List<String> description, String permission, List<String> commands, boolean fromJoin, boolean auto, boolean broadcast) {
-		this.time=minutes*1200;
+		this.time=minutes*60000;
 		this.name=clr(name);
 		this.description=clr(description);
 		this.commands=commands;
@@ -90,16 +90,16 @@ public class Rank {
 	 * @return Does player enough time to gain that rank
 	 */
 	public boolean checkTime(Player p) {
-		return time <= (fromJoin ? (System.currentTimeMillis()-p.getFirstPlayed())/50 : p.getStatistic(Statistic.PLAY_ONE_MINUTE));
+		return time <= (fromJoin ? (System.currentTimeMillis()-p.getFirstPlayed()) : p.getStatistic(Statistic.PLAY_ONE_MINUTE)*50);
 	}
 
 	/**
 	 * Gets player's time to gain that rank
 	 * @param p Player to check
-	 * @return Time to gain this rank
+	 * @return Time to gain this rank in milliseconds
 	 */
 	public long getTime(Player p) {
-		return time - (fromJoin ? (System.currentTimeMillis()-p.getFirstPlayed())/50 : p.getStatistic(Statistic.PLAY_ONE_MINUTE));
+		return time - (fromJoin ? (System.currentTimeMillis()-p.getFirstPlayed()) : p.getStatistic(Statistic.PLAY_ONE_MINUTE)*50);
 	}
 
 	public List<String> getDescription() {
