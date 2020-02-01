@@ -42,14 +42,16 @@ public class Rank {
 	 * @param broadcast Do you want to broadcast about rankup
 	 */
 	public Rank(int minutes, String name, List<String> description, String permission, List<String> commands, boolean fromJoin, boolean auto, boolean broadcast) {
-		this.time=minutes*60000;
-		this.name=clr(name);
-		this.description=clr(description);
-		this.commands=commands;
-		this.permission=permission;
-		this.fromJoin=fromJoin;
-		this.auto=auto;
-		this.broadcast=broadcast;
+		this.time = minutes*60000;
+
+		this.name = clr(name);
+		this.description = clr(description);
+		this.commands = commands;
+		this.permission = permission;
+
+		this.fromJoin = fromJoin;
+		this.auto = auto;
+		this.broadcast = broadcast;
 	}
 
 	/**
@@ -58,7 +60,7 @@ public class Rank {
 	 * @return true if player have access
 	 */
 	public boolean rankUp(Player p) {
-		if(!haveAccess(p))
+		if(!hasAccess(p))
 			return false;
 		description.forEach(s->p.sendMessage(s.replace("%player", p.getName())));
 		if(auto)
@@ -67,25 +69,29 @@ public class Rank {
 	}
 
 	public void execute(Player p) {
-		if(broadcast)
-			Bukkit.broadcastMessage(RankPlugin.broadcastMessage.replace("%player", p.getName()).replace("%rank", name));
-		p.sendMessage(RankPlugin.gettingMessage.replace("%rank", name).replace("%player", p.getName()));
+		if(broadcast) Bukkit.broadcastMessage(
+				RankPlugin.broadcastMessage
+				.replace("%player", p.getName())
+				.replace("%rank", name));
+		p.sendMessage(
+				RankPlugin.gettingMessage
+				.replace("%player", p.getName())
+				.replace("%rank", name));
 		ConsoleCommandSender console=Bukkit.getConsoleSender();
-		Bukkit.getScheduler().runTask(RankPlugin.getInstance(),
-				() -> commands.forEach(cmd->Bukkit.dispatchCommand(console, cmd.replace("%player", p.getName()))));
+		commands.forEach(cmd -> Bukkit.dispatchCommand(console, cmd.replace("%player", p.getName())));
 	}
 
 	/**
-	 * Checks access to gain this rank
+	 * Check access to gain this rank
 	 * @param p Player to check
 	 * @return Can player gain that rank
 	 */
-	public boolean haveAccess(Player p) {
-		return checkTime(p) && RankPlugin.getMode()==p.hasPermission(permission);
+	public boolean hasAccess(Player p) {
+		return checkTime(p) && RankPlugin.getMode() == p.hasPermission(permission);
 	}
 
 	/**
-	 * Checks player's time compared to rank's request
+	 * Check player's time compared to rank's request
 	 * @param p Player to check
 	 * @return Does player enough time to gain that rank
 	 */
@@ -94,7 +100,7 @@ public class Rank {
 	}
 
 	/**
-	 * Gets player's time to gain that rank
+	 * Get player's time to gain this rank
 	 * @param p Player to check
 	 * @return Time to gain this rank in milliseconds
 	 */

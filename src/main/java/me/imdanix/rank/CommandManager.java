@@ -15,17 +15,17 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		// Command list
-		if(args.length==0||args[0].equalsIgnoreCase("help")) {
+		if(args.length == 0 || args[0].equalsIgnoreCase("help")) {
 			RankPlugin.helpMessages.forEach(sender::sendMessage);
 			return true;
 		}
 		// Ranks info
 		if(args[0].equalsIgnoreCase("info")) {
-			if(args.length==1)
+			if(args.length == 1)
 				RankPlugin.infoMessages.forEach(sender::sendMessage);
 			else {
 				Rank rank=RankPlugin.ranks.get(args[1]);
-				if(rank!=null)
+				if(rank != null)
 					rank.getDescription().forEach(sender::sendMessage);
 				else
 					sender.sendMessage(RankPlugin.noRank.replace("%rank", args[1]));
@@ -44,12 +44,16 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 			return true;
 		}
 		// Ranking
-		Rank rank=RankPlugin.ranks.get(args[0]);
+		Rank rank = RankPlugin.ranks.get(args[0]);
 		if(rank!=null) {
 			if(rank.rankUp((Player)sender))
 				rank.execute((Player)sender);
-			else
-				sender.sendMessage(RankPlugin.noTime.replace("%rank", rank.getName()).replace("%time", ""+rank.getTime((Player)sender)/60000));
+			else {
+				sender.sendMessage(
+						RankPlugin.noTime
+						.replace("%rank", rank.getName())
+						.replace("%time", Long.toString(rank.getTime((Player)sender)/60000)));
+			}
 		} else
 			sender.sendMessage(RankPlugin.noRank.replace("%rank", args[0]));
 		return true;
@@ -58,10 +62,14 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
 		List<String> variants=new ArrayList<>(RankPlugin.ranks.keySet());
-		if(args.length==1)
+		String arg = args[0];
+		if(args.length == 1) {
 			variants.add("info");
+		} else if(args.length == 2) {
+			arg = args[1];
+		}
 		List<String> completions = new ArrayList<>(variants);
-		StringUtil.copyPartialMatches(args[0], variants, completions);
+		StringUtil.copyPartialMatches(arg, variants, completions);
 		Collections.sort(completions);
 		return completions;
 	}
