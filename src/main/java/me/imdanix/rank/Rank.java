@@ -21,7 +21,7 @@ public class Rank {
 	private final boolean broadcast;
 
 	public Rank(String id, ConfigurationSection section) {
-		this(section.getInt("minutes"),
+		this(section.getLong("minutes")*60000,
 				section.getString("name"),
 				section.getStringList("description"),
 				"xrank.rank."+id,
@@ -32,17 +32,17 @@ public class Rank {
 	}
 
 	/**
-	 * @param minutes How many minutes player should have to rankup
+	 * @param time How many milliseconds player should have to rankup
 	 * @param name Name of this rank. Colors can be used
 	 * @param description Description of this rank. Colors can be used
 	 * @param permission Permission of this rank
 	 * @param commands List of commands that will be executed on rankup
-	 * @param fromJoin Are time from first join or player's statistic
+	 * @param fromJoin Is time from first join or player's statistic
 	 * @param auto Will player gain this rank automatically
 	 * @param broadcast Do you want to broadcast about rankup
 	 */
-	public Rank(int minutes, String name, List<String> description, String permission, List<String> commands, boolean fromJoin, boolean auto, boolean broadcast) {
-		this.time = minutes*60000;
+	public Rank(long time, String name, List<String> description, String permission, List<String> commands, boolean fromJoin, boolean auto, boolean broadcast) {
+		this.time = time;
 
 		this.name = clr(name);
 		this.description = clr(description);
@@ -57,7 +57,7 @@ public class Rank {
 	/**
 	 * Trying to rankup if possible or showing that it's possible
 	 * @param p Player to rankup
-	 * @return true if player have access
+	 * @return Does player have access
 	 */
 	public boolean rankUp(Player p) {
 		if(!hasAccess(p))
@@ -77,7 +77,7 @@ public class Rank {
 				RankPlugin.gettingMessage
 				.replace("%player", p.getName())
 				.replace("%rank", name));
-		ConsoleCommandSender console=Bukkit.getConsoleSender();
+		ConsoleCommandSender console = Bukkit.getConsoleSender();
 		commands.forEach(cmd -> Bukkit.dispatchCommand(console, cmd.replace("%player", p.getName())));
 	}
 

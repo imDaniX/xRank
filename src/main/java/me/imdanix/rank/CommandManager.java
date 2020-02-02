@@ -52,7 +52,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 				sender.sendMessage(
 						RankPlugin.noTime
 						.replace("%rank", rank.getName())
-						.replace("%time", Long.toString(rank.getTime((Player)sender)/60000)));
+						.replace("%time", Double.toString(fix(rank.getTime((Player)sender)/3600000))));
 			}
 		} else
 			sender.sendMessage(RankPlugin.noRank.replace("%rank", args[0]));
@@ -72,5 +72,21 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 		StringUtil.copyPartialMatches(arg, variants, completions);
 		Collections.sort(completions);
 		return completions;
+	}
+
+	private static double fix(double a) {
+		double j = a * 10;
+		boolean cut = false;
+		while(true) {
+			j = (j * 10) % 1;
+			double b = j * 10;
+			if(b < 6) {
+				if(b < 5) {
+					cut = true;
+					break;
+				}
+			} else break;
+		}
+		return (Math.floor(a)) + (Math.floor(a%1 * 100) + (cut ? 0 : 1)) / 100;
 	}
 }
