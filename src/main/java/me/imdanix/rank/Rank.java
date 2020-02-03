@@ -21,7 +21,7 @@ public class Rank {
 	private final boolean broadcast;
 
 	public Rank(String id, ConfigurationSection section) {
-		this(section.getLong("minutes")*60000,
+		this(section.getLong("minutes") * 60000,
 				section.getString("name"),
 				section.getStringList("description"),
 				"xrank.rank."+id,
@@ -32,7 +32,7 @@ public class Rank {
 	}
 
 	/**
-	 * @param time How many milliseconds player should have to rankup
+	 * @param time How many millis player should have to rankup
 	 * @param name Name of this rank. Colors can be used
 	 * @param description Description of this rank. Colors can be used
 	 * @param permission Permission of this rank
@@ -87,7 +87,7 @@ public class Rank {
 	 * @return Can player gain that rank
 	 */
 	public boolean hasAccess(Player p) {
-		return checkTime(p) && RankPlugin.getMode() == p.hasPermission(permission);
+		return RankPlugin.getMode() == p.hasPermission(permission) && checkTime(p);
 	}
 
 	/**
@@ -96,7 +96,7 @@ public class Rank {
 	 * @return Does player enough time to gain that rank
 	 */
 	public boolean checkTime(Player p) {
-		return time <= (fromJoin ? (System.currentTimeMillis()-p.getFirstPlayed()) : p.getStatistic(Statistic.PLAY_ONE_MINUTE)*50);
+		return time <= _getTime(p);
 	}
 
 	/**
@@ -105,7 +105,13 @@ public class Rank {
 	 * @return Time to gain this rank in milliseconds
 	 */
 	public long getTime(Player p) {
-		return time - (fromJoin ? (System.currentTimeMillis()-p.getFirstPlayed()) : p.getStatistic(Statistic.PLAY_ONE_MINUTE)*50);
+		return time - _getTime(p);
+	}
+
+	private long _getTime(Player p) {
+		return fromJoin ?
+				System.currentTimeMillis() - p.getFirstPlayed() :
+				((long)p.getStatistic(Statistic.PLAY_ONE_MINUTE)) * 50;
 	}
 
 	public List<String> getDescription() {
