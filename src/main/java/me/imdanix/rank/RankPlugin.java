@@ -68,7 +68,7 @@ public final class RankPlugin extends JavaPlugin {
 		}, timer, timer);
 	}
 
-	public static boolean getMode() {
+	public static boolean isBackward() {
 		return backwardLook;
 	}
 

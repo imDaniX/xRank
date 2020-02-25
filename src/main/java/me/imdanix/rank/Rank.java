@@ -2,6 +2,7 @@ package me.imdanix.rank;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
+import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -20,15 +21,15 @@ public class Rank {
 	private final boolean auto;
 	private final boolean broadcast;
 
-	public Rank(String id, ConfigurationSection section) {
-		this(section.getLong("minutes") * 60000,
-				section.getString("name"),
-				section.getStringList("description"),
+	public Rank(String id, ConfigurationSection cfg) {
+		this(cfg.getLong("minutes") * 60000L,
+				cfg.getString("name"),
+				cfg.getStringList("description"),
 				"xrank.rank."+id,
-				section.getStringList("commands"),
-				section.getBoolean("from_join"),
-				section.getBoolean("auto"),
-				section.getBoolean("broadcast"));
+				cfg.getStringList("commands"),
+				cfg.getBoolean("from_join"),
+				cfg.getBoolean("auto"),
+				cfg.getBoolean("broadcast"));
 	}
 
 	/**
@@ -87,13 +88,13 @@ public class Rank {
 	 * @return Can player gain that rank
 	 */
 	public boolean hasAccess(Player p) {
-		return RankPlugin.getMode() == p.hasPermission(permission) && checkTime(p);
+		return RankPlugin.isBackward() == p.hasPermission(permission) && checkTime(p);
 	}
 
 	/**
 	 * Check player's time compared to rank's request
 	 * @param p Player to check
-	 * @return Does player enough time to gain that rank
+	 * @return Does player enough time to gain this rank
 	 */
 	public boolean checkTime(Player p) {
 		return time <= _getTime(p);
@@ -111,7 +112,7 @@ public class Rank {
 	private long _getTime(Player p) {
 		return fromJoin ?
 				System.currentTimeMillis() - p.getFirstPlayed() :
-				((long)p.getStatistic(Statistic.PLAY_ONE_MINUTE)) * 50;
+				((long)p.getStatistic(Statistic.PLAY_ONE_MINUTE)) * 50L;
 	}
 
 	public List<String> getDescription() {
@@ -120,5 +121,9 @@ public class Rank {
 
 	public String getName() {
 		return name;
+	}
+
+	public void debug(CommandSender sender) {
+		sender.sendMessage(time + "ms" + (fromJoin ? " join" : " play") + (auto ? ", auto" : ", manual"));
 	}
 }

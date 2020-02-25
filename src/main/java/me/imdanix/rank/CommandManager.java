@@ -26,9 +26,22 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 			else {
 				Rank rank=RankPlugin.ranks.get(args[1]);
 				if(rank != null)
-					rank.getDescription().forEach(sender::sendMessage);
+					rank.getDescription().forEach(s -> sender.sendMessage(s.replace("%player", sender.getName())));
 				else
 					sender.sendMessage(RankPlugin.noRank.replace("%rank", args[1]));
+			}
+			return true;
+		}
+		// Debug
+		if(args[0].equalsIgnoreCase("debug")) {
+			if(!sender.hasPermission("xrank.debug"))
+				return false;
+			if(args.length == 1)
+				RankPlugin.infoMessages.forEach(sender::sendMessage);
+			else {
+				Rank rank = RankPlugin.ranks.get(args[1]);
+				if(rank != null)
+					rank.debug(sender);
 			}
 			return true;
 		}
@@ -52,7 +65,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 				sender.sendMessage(
 						RankPlugin.noTime
 						.replace("%rank", rank.getName())
-						.replace("%time", Double.toString(fix(rank.getTime((Player)sender)/3600000))));
+						.replace("%time", Double.toString(fix(rank.getTime((Player)sender)/3600000D))));
 			}
 		} else
 			sender.sendMessage(RankPlugin.noRank.replace("%rank", args[0]));
