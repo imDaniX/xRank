@@ -27,9 +27,9 @@ public class Rank {
 				cfg.getStringList("description"),
 				"xrank.rank."+id,
 				cfg.getStringList("commands"),
-				cfg.getBoolean("from_join"),
-				cfg.getBoolean("auto"),
-				cfg.getBoolean("broadcast"));
+				cfg.getBoolean("from_join", false),
+				cfg.getBoolean("auto", true),
+				cfg.getBoolean("broadcast", true));
 	}
 
 	/**
@@ -88,16 +88,7 @@ public class Rank {
 	 * @return Can player gain that rank
 	 */
 	public boolean hasAccess(Player p) {
-		return RankPlugin.isBackward() == p.hasPermission(permission) && checkTime(p);
-	}
-
-	/**
-	 * Check player's time compared to rank's request
-	 * @param p Player to check
-	 * @return Does player enough time to gain this rank
-	 */
-	public boolean checkTime(Player p) {
-		return time <= _getTime(p);
+		return RankPlugin.isBackward() == p.hasPermission(permission) && getTime(p) > 0;
 	}
 
 	/**
@@ -123,7 +114,7 @@ public class Rank {
 		return name;
 	}
 
-	public void debug(CommandSender sender) {
-		sender.sendMessage(time + "ms" + (fromJoin ? " join" : " play") + (auto ? ", auto" : ", manual"));
+	public String debug() {
+		return time + "ms" + (fromJoin ? " join" : " play") + (auto ? ", auto" : ", manual");
 	}
 }

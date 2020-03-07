@@ -41,7 +41,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 			else {
 				Rank rank = RankPlugin.ranks.get(args[1]);
 				if(rank != null)
-					rank.debug(sender);
+					sender.sendMessage(rank.debug());
 			}
 			return true;
 		}
