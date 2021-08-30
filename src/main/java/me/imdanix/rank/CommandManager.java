@@ -59,9 +59,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
         // Ranking
         Rank rank = RankPlugin.ranks.get(args[0]);
         if(rank!=null) {
-            if(rank.rankUp((Player)sender))
-                rank.execute((Player)sender);
-            else {
+            if(!rank.rankUp((Player)sender)) {
                 sender.sendMessage(
                         RankPlugin.noTime
                         .replace("%rank", rank.getName())
