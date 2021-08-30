@@ -1,10 +1,9 @@
 name: xRank
-version: ${project.version}
+version: '${project.version}'
 main: me.imdanix.rank.RankPlugin
-api-version: 1.13
-load: STARTUP
+api-version: '1.13'
 authors: [imDaniX]
-description: Simple rank plugin
+description: '${project.version}'
 commands:
   xrank:
     aliases: [rank,ranks]
