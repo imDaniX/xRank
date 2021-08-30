@@ -8,9 +8,11 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-import static me.imdanix.rank.RankPlugin.clr;
+import static me.imdanix.rank.Msg.clr;
 
 public class Rank {
+    private static final long TICK_TO_MS = 1000 / 20;
+
     private final long time;
     private final String name;
     private final String permission;
@@ -25,11 +27,12 @@ public class Rank {
         this(cfg.getLong("minutes") * 60000,
                 cfg.getString("name"),
                 cfg.getStringList("description"),
-                "xrank.rank."+id,
+                "xrank.rank." + id,
                 cfg.getStringList("commands"),
-                cfg.getBoolean("from_join", false),
+                cfg.getBoolean("from-join", false),
                 cfg.getBoolean("auto", true),
-                cfg.getBoolean("broadcast", true));
+                cfg.getBoolean("broadcast", true)
+        );
     }
 
     /**
@@ -62,25 +65,27 @@ public class Rank {
      * @return Does player have access
      */
     public boolean rankUp(Player p) {
-        if(!hasAccess(p))
+        if (!hasAccess(p))
             return false;
         description.forEach(s -> p.sendMessage(s.replace("%player", p.getName())));
-        if(auto)
+        if (auto)
             execute(p);
         return true;
     }
 
     public void execute(Player p) {
-        if(broadcast) Bukkit.broadcastMessage(
-                RankPlugin.broadcastMessage
-                .replace("%player", p.getName())
-                .replace("%rank", name)
-        );
+        if (broadcast) {
+            Bukkit.broadcastMessage(
+                    Msg.BROADCAST.get()
+                            .replace("%player", p.getName())
+                            .replace("%rank", name)
+            );
+        }
         p.sendMessage(
-                RankPlugin.gettingMessage
-                .replace("%player", p.getName())
-                .replace("%rank", name))
-        ;
+                Msg.GETTING.get()
+                        .replace("%player", p.getName())
+                        .replace("%rank", name)
+        );
         ConsoleCommandSender console = Bukkit.getConsoleSender();
         commands.forEach(cmd -> Bukkit.dispatchCommand(console, cmd.replace("%player", p.getName())));
     }
@@ -105,8 +110,8 @@ public class Rank {
 
     private long _getTime(Player p) {
         return fromJoin ?
-                System.currentTimeMillis() - p.getFirstPlayed() :
-                ((long)p.getStatistic(Statistic.PLAY_ONE_MINUTE)) * 50L;
+               System.currentTimeMillis() - p.getFirstPlayed() :
+               ((long) p.getStatistic(Statistic.PLAY_ONE_MINUTE)) * TICK_TO_MS;
     }
 
     public List<String> getDescription() {
