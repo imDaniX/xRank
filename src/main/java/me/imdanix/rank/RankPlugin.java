@@ -5,6 +5,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,12 +16,10 @@ public final class RankPlugin extends JavaPlugin {
 
     private Map<String, Rank> ranks;
     public long timer;
-    private JavaPlugin instance;
-    private int scheduler;
+    private BukkitTask scheduler;
 
     @Override
     public void onEnable() {
-        instance = this;
         ranks = new HashMap<>();
         saveDefaultConfig();
         Objects.requireNonNull(getCommand("xrank")).setExecutor(new CommandManager(this));
@@ -35,14 +34,14 @@ public final class RankPlugin extends JavaPlugin {
     }
 
     public void loadData() {
-        FileConfiguration cfg = instance.getConfig();
+        FileConfiguration cfg = getConfig();
         timer = cfg.getLong("settings.timer") * MINUTES_TO_TICKS;
         Msg.reload(cfg.getConfigurationSection("messages"));
     }
 
     public void loadRanks() {
         ranks.clear();
-        ConfigurationSection ranksSec = instance.getConfig().getConfigurationSection("ranks");
+        ConfigurationSection ranksSec = getConfig().getConfigurationSection("ranks");
         for (String name : ranksSec.getKeys(false)) {
             ranks.put(name.toLowerCase(), new Rank(name, ranksSec.getConfigurationSection(name)));
         }
@@ -53,16 +52,16 @@ public final class RankPlugin extends JavaPlugin {
     }
 
     public void startScheduler() {
-        scheduler = Bukkit.getScheduler().scheduleSyncRepeatingTask(instance, () -> {
+        scheduler = Bukkit.getScheduler().runTaskTimer(this, () -> {
             for (Player p : Bukkit.getOnlinePlayers())
                 for (Rank r : ranks.values()) {
-                    if (r.rankUp(p))
+                    if (r.rankUp(p) == Rank.CheckResult.SUCCESS)
                         break;
                 }
         }, timer, timer);
     }
 
     public void stopScheduler() {
-        Bukkit.getScheduler().cancelTask(scheduler);
+        scheduler.cancel();
     }
 }

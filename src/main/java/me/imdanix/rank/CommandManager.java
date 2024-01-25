@@ -6,12 +6,20 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
+import org.jetbrains.annotations.NotNull;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 public class CommandManager implements CommandExecutor, TabCompleter {
+    private static final NumberFormat FORMAT = new DecimalFormat("#.0", DecimalFormatSymbols.getInstance(Locale.ROOT));
+    private static final double MS_TO_HOURS = 1000 * 60 * 60;
+
     private final RankPlugin plugin;
 
     public CommandManager(RankPlugin plugin) {
@@ -19,7 +27,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         // Command list
         if (args.length == 0 || (args[0] = args[0].toLowerCase()).equals("help")) {
             Msg.HELP.getList().forEach(sender::sendMessage);
@@ -47,8 +55,9 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                 Msg.INFO.getList().forEach(sender::sendMessage);
             } else {
                 Rank rank = plugin.getRanks().get(args[1]);
-                if (rank != null)
+                if (rank != null) {
                     sender.sendMessage(rank.debug());
+                }
             }
             return true;
         }
@@ -67,11 +76,23 @@ public class CommandManager implements CommandExecutor, TabCompleter {
         // Ranking
         Rank rank = plugin.getRanks().get(args[0]);
         if (rank != null) {
-            if (!rank.rankUp((Player) sender)) {
-                sender.sendMessage(
-                        Msg.NO_TIME.get()
-                                .replace("%rank", rank.getName())
-                                .replace("%time", Double.toString(fix(rank.getTime((Player) sender) / 3600000D))));
+            Rank.CheckResult result = rank.rankUp((Player) sender);
+            switch (result) {
+                case SUCCESS -> {
+                    rank.getDescription().forEach(s -> sender.sendMessage(s.replace("%player", sender.getName())));
+                }
+                case ALREADY_GOT -> {
+                    sender.sendMessage(Msg.ALREADY_GOT.get().replace("%rank", rank.getName()));
+                }
+                case NOT_ENOUGH -> {
+                    sender.sendMessage(Msg.NO_TIME.get()
+                            .replace("%rank", rank.getName())
+                            .replace("%time", FORMAT.format(rank.getTime((Player) sender) / MS_TO_HOURS))
+                    );
+                }
+                case NO_ACCESS -> {
+                    sender.sendMessage(Msg.NO_ACCESS.get().replace("%rank", rank.getName()));
+                }
             }
         } else {
             sender.sendMessage(Msg.NO_RANK.get().replace("%rank", args[0]));
@@ -80,7 +101,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, String[] args) {
         List<String> variants = new ArrayList<>(plugin.getRanks().keySet());
         String arg = args[0];
         if (args.length == 1) {
@@ -92,21 +113,5 @@ public class CommandManager implements CommandExecutor, TabCompleter {
         StringUtil.copyPartialMatches(arg, variants, completions);
         Collections.sort(completions);
         return completions;
-    }
-
-    private static double fix(double a) {
-        double j = a * 10;
-        boolean cut = false;
-        while (true) {
-            j = (j * 10) % 1;
-            double b = j * 10;
-            if (b < 6) {
-                if (b < 5) {
-                    cut = true;
-                    break;
-                }
-            } else break;
-        }
-        return (Math.floor(a)) + (Math.floor(a % 1 * 100) + (cut ? 0 : 1)) / 100;
     }
 }

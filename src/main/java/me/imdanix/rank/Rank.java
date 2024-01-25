@@ -24,10 +24,11 @@ public class Rank {
     private final boolean broadcast;
 
     public Rank(String id, ConfigurationSection cfg) {
-        this(cfg.getLong("minutes") * 60000,
+        this(
+                id,
+                cfg.getLong("minutes") * 60000L,
                 cfg.getString("name"),
                 cfg.getStringList("description"),
-                "xrank.rank." + id,
                 cfg.getStringList("commands"),
                 cfg.getBoolean("from-join", false),
                 cfg.getBoolean("auto", true),
@@ -36,23 +37,23 @@ public class Rank {
     }
 
     /**
-     * @param time How many millis player should have to rankup
+     * @param id Id of this rank
+     * @param time How many millis player should have to rank up
      * @param name Name of this rank. Colors can be used
      * @param description Description of this rank. Colors can be used
-     * @param permission Permission of this rank
-     * @param commands List of commands that will be executed on rankup
+     * @param commands List of commands that will be executed on rank up
      * @param fromJoin Is time from first join or player's statistic
      * @param auto Will player gain this rank automatically
-     * @param broadcast Do you want to broadcast about rankup
+     * @param broadcast Do you want to broadcast about rank up
      */
-    public Rank(long time, String name, List<String> description, String permission, List<String> commands, boolean fromJoin, boolean auto, boolean broadcast) {
+    public Rank(String id, long time, String name, List<String> description, List<String> commands, boolean fromJoin, boolean auto, boolean broadcast) {
         this.time = time;
 
         this.name = clr(name);
         this.description = clr(description);
         this.commands = commands;
-        this.permission = permission;
-        this.gotPermission = permission + ".got";
+        this.permission = "xrank.rank." + id;
+        this.gotPermission = "xrank.rank." + id + ".got";
 
         this.fromJoin = fromJoin;
         this.auto = auto;
@@ -60,17 +61,19 @@ public class Rank {
     }
 
     /**
-     * Trying to rankup if possible or showing that it's possible
-     * @param p Player to rankup
+     * Trying to rank up if possible or showing that it's possible
+     * @param p Player to rank up
      * @return Does player have access
      */
-    public boolean rankUp(Player p) {
-        if (!hasAccess(p))
-            return false;
-        description.forEach(s -> p.sendMessage(s.replace("%player", p.getName())));
-        if (auto)
+    public CheckResult rankUp(Player p) {
+        CheckResult result = hasAccess(p);
+        if (result != CheckResult.SUCCESS) {
+            return result;
+        }
+        if (auto) {
             execute(p);
-        return true;
+        }
+        return result;
     }
 
     public void execute(Player p) {
@@ -95,8 +98,11 @@ public class Rank {
      * @param p Player to check
      * @return Can player gain that rank
      */
-    public boolean hasAccess(Player p) {
-        return p.hasPermission(permission) && !p.hasPermission(gotPermission) && getTime(p) <= 0;
+    public CheckResult hasAccess(Player p) {
+        if (p.hasPermission(gotPermission)) return CheckResult.ALREADY_GOT;
+        if (!p.hasPermission(permission)) return CheckResult.NO_ACCESS;
+        if (getTime(p) > 0) return CheckResult.NOT_ENOUGH;
+        return CheckResult.SUCCESS;
     }
 
     /**
@@ -109,9 +115,9 @@ public class Rank {
     }
 
     private long _getTime(Player p) {
-        return fromJoin ?
-               System.currentTimeMillis() - p.getFirstPlayed() :
-               ((long) p.getStatistic(Statistic.PLAY_ONE_MINUTE)) * TICK_TO_MS;
+        return fromJoin
+                ? System.currentTimeMillis() - p.getFirstPlayed()
+                : ((long) p.getStatistic(Statistic.PLAY_ONE_MINUTE)) * TICK_TO_MS;
     }
 
     public List<String> getDescription() {
@@ -124,5 +130,9 @@ public class Rank {
 
     public String debug() {
         return time + "ms" + (fromJoin ? " join" : " play") + (auto ? ", auto" : ", manual");
+    }
+
+    public enum CheckResult {
+        SUCCESS, NO_ACCESS, NOT_ENOUGH, ALREADY_GOT
     }
 }

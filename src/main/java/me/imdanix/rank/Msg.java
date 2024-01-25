@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 public enum Msg {
-    GETTING, BROADCAST, NO_TIME, NO_RANK, HELP, INFO;
+    GETTING, BROADCAST, NO_TIME, NO_RANK, NO_ACCESS, ALREADY_GOT, HELP, INFO;
 
     private final String path;
     private List<String> text;
@@ -46,7 +46,7 @@ public enum Msg {
     }
 
     public static List<String> clr(List<String> ls) {
-        List<String> clred = new ArrayList<>();
+        List<String> clred = new ArrayList<>(ls.size());
         ls.forEach(s -> clred.add(clr(s)));
         return clred;
     }
