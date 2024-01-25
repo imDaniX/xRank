@@ -53,11 +53,12 @@ public final class RankPlugin extends JavaPlugin {
 
     public void startScheduler() {
         scheduler = Bukkit.getScheduler().runTaskTimer(this, () -> {
-            for (Player p : Bukkit.getOnlinePlayers())
+            for (Player p : Bukkit.getOnlinePlayers()) {
                 for (Rank r : ranks.values()) {
                     if (r.rankUp(p) == Rank.CheckResult.SUCCESS)
                         break;
                 }
+            }
         }, timer, timer);
     }
 
