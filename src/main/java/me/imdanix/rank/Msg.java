@@ -19,7 +19,7 @@ public enum Msg {
     }
 
     public String get() {
-        return text.get(0);
+        return text.getFirst();
     }
 
     public List<String> getList() {
