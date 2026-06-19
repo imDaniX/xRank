@@ -18,6 +18,7 @@ public class Rank {
     private final String permission;
     private final String gotPermission;
     private final List<String> description;
+    private final List<String> info;
     private final List<String> commands;
     private final boolean fromJoin;
     private final boolean auto;
@@ -29,6 +30,7 @@ public class Rank {
                 cfg.getLong("minutes") * 60000L,
                 cfg.getString("name"),
                 cfg.getStringList("description"),
+                cfg.getStringList("info"),
                 cfg.getStringList("commands"),
                 cfg.getBoolean("from-join", false),
                 cfg.getBoolean("auto", true),
@@ -46,11 +48,14 @@ public class Rank {
      * @param auto Will player gain this rank automatically
      * @param broadcast Do you want to broadcast about rank up
      */
-    public Rank(String id, long time, String name, List<String> description, List<String> commands, boolean fromJoin, boolean auto, boolean broadcast) {
+    public Rank(String id, long time, String name, List<String> description, List<String> info, List<String> commands, boolean fromJoin, boolean auto, boolean broadcast) {
         this.time = time;
 
         this.name = clr(name);
         this.description = clr(description);
+        this.info = info.isEmpty()
+                ? clr(description)
+                : clr(info);
         this.commands = commands;
         this.permission = "xrank.rank." + id;
         this.gotPermission = "xrank.rank." + id + ".got";
@@ -118,6 +123,10 @@ public class Rank {
         return fromJoin
                 ? System.currentTimeMillis() - p.getFirstPlayed()
                 : ((long) p.getStatistic(Statistic.PLAY_ONE_MINUTE)) * TICK_TO_MS;
+    }
+
+    public List<String> getInfo() {
+        return info;
     }
 
     public List<String> getDescription() {

@@ -40,7 +40,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
             } else {
                 Rank rank = plugin.getRanks().get(args[1]);
                 if (rank != null) {
-                    rank.getDescription().forEach(s -> sender.sendMessage(s.replace("%player", sender.getName())));
+                    rank.getInfo().forEach(s -> sender.sendMessage(s.replace("%player", sender.getName())));
                 } else {
                     sender.sendMessage(Msg.NO_RANK.get().replace("%rank", args[1]));
                 }
